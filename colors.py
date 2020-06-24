@@ -1,3 +1,11 @@
+import numpy as np
+import skimage
+from skimage import io, transform, exposure, data, color
+from skimage.color import *
+
+import matplotlib.pyplot as plt
+from matplotlib.pyplot import imshow
+
 def unmix_purple_img(purple_img_path, loud=False):
     img = io.imread(purple_img_path)                                  # loads image from path
     
@@ -32,6 +40,4 @@ def unmix_pink_imgs(pink_img_path, loud=False):
         ax[1].imshow(separated_img[:, :, 1])
         
     return separated_img[:, :, 1]
-
-unmixed_pink = unmix_pink_imgs(pink_img_paths[3], True)
 
