@@ -3,7 +3,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '1'
 
 import tensorflow as tf
 from tensorflow import keras
-tf.debugging.set_log_device_placement(True)
+# tf.debugging.set_log_device_placement(True)
 
 def config_gpu(gpu_index, loud=False):
     gpus = tf.config.experimental.list_physical_devices('GPU')
