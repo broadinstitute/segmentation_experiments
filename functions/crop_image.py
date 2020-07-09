@@ -2,7 +2,6 @@ from skimage import io
 import numpy as np
 import matplotlib.pyplot as plt
 
-
 def random_crop(img, crop_size=64, loud=False):
     img = img[:, :, :3]    # neglect alpha value
     row_start = np.random.randint(0, img.shape[0] - crop_size)  # select a random row and column
@@ -26,3 +25,4 @@ def random_crop(img, crop_size=64, loud=False):
         ax[1].imshow(cropped_img)
         
     return cropped_img
+

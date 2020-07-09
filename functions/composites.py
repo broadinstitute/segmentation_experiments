@@ -2,7 +2,7 @@ import numpy as np
 from skimage import io
 
 def composite_masks(mask_collection, loud=False):
-    composite = np.zeros(mask_collection.shape[0:2])
+    composite = np.zeros(mask_collection[0].shape[0:2])
     
     for i in range(len(mask_collection)):
         composite += (mask_collection[i] > 0) * (i+1)
