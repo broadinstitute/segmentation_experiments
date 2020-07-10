@@ -81,7 +81,7 @@ def load_data_by_color(color="Default", csv_lines=csv_lines):
     png_list = []
     img_paths = []
     mask_colls = []
-    
+
     for row in csv_lines:
         if color in row:
             png_list.append(row[1])

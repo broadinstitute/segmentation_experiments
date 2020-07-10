@@ -2,20 +2,19 @@ from skimage import io
 import numpy as np
 import matplotlib.pyplot as plt
 
+def random_crop(img, crop_size=64, loud=False):
+    img = img[:, :, :3]    # neglect alpha value
+    row_start = np.random.randint(0, img.shape[0] - crop_size)  # select a random row and column
+    col_start = np.random.randint(0, img.shape[1] - crop_size)  # which still allows for a full crop
 
-def random_crop(img_path, crop_size=64, loud=False):
-    img = io.imread(img_path)[:, :, :3]      # neglect alpha value
-    row_max = img.shape[0] - crop_size       # get the maximum row or column we can begin cropping
-    col_max = img.shape[1] - crop_size
+    row_end = row_start + crop_size
+    col_end = col_start + crop_size                            
     
-    random_start = np.random.randint(0, min(row_max, col_max))  # select a random point to start cropping within our boundary
-    end = random_start + crop_size                              
-    
-    cropped_img = img[random_start:end, random_start:end, :]    # slice the image along our desired border
+    cropped_img = img[row_start:row_end, col_start:col_end, :]    # slice the image along our desired border
     
     if loud:
-        print("Original image size is %d, %d. Crop starts at %d,%d. Cropped image is %dx%d pixels" 
-              %(img.shape[0], img.shape[1], random_start,random_start, crop_size, crop_size))
+        print("Original image size is %d by %d. Crop starts at (%d,%d). Cropped image is %dx%d pixels" 
+              %(img.shape[0], img.shape[1], row_start, col_start, crop_size, crop_size))
         
         fig, ax = plt.subplots(ncols=2, nrows=1, figsize=(8,8))
         
@@ -26,3 +25,4 @@ def random_crop(img_path, crop_size=64, loud=False):
         ax[1].imshow(cropped_img)
         
     return cropped_img
+
