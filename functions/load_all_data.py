@@ -8,6 +8,15 @@ training_imgs_dir = "/raid/data/BBBC038/training/"
 
 
 def load_imgs_masks():
+    """
+    Function which loads ALL images and mask collections (unorganized)
+    
+    Returns 4 arrays
+        First contains paths to all images
+        Second contains names of each image
+        Third contains names of all masks for each image
+        Fourth contains collections of all masks corresponding to each image
+    """
     img_paths = []
     img_names = []
     mask_png_list = []
@@ -29,6 +38,11 @@ def load_imgs_masks():
     return img_paths, img_names, mask_png_list, mask_colls
 
 def load_labeled_data():
+    """
+    Function to load 'labeled' data
+    
+    Returns image groups, table entries, and csv rows
+    """
     table_entries = []
     image_groups = pd.read_csv(BBBC038 + "training_classifications.csv")
     
@@ -50,70 +64,37 @@ def load_labeled_data():
 
 image_groups, table_entries, csv_lines = load_labeled_data()
 
-def load_COLOR_data(csv_lines=csv_lines):
-    def_png_list = []
-    def_img_paths = []
-    def_mask_colls = []
+def load_data_by_color(color="Default", csv_lines=csv_lines):
+    """
+    Function to load all images of the specified color.
     
-    bw_png_list = []
-    bw_img_paths = []
-    bw_mask_colls = []
+    Options include "Default", "Pink-Purple", "TissueBW", "Purple"
     
-    purple_png_list = []
-    purple_img_paths = []
-    purple_mask_colls = []
+    returns 3 arrays. 
+        First array has the name of the png 
+        Second is the path to the image
+        Third is the mask collection corresponding to the image
+    """
+    if (color != "Default") and (color != "Pink-Purple") and (color != "TissueBW") and (color != "Purple"):
+        raise ValueError("Must select a supported color. These include 'Default', 'Pink-Purple', 'TissueBW', 'Purple'.")
     
-    pink_png_list = []
-    pink_img_paths = []
-    pink_mask_colls = []
-    
-    for row in csv_lines: # make this a parameter in the function call
-        if "Default" in row:
-            def_png_list.append(row[1])
-        elif "TissueBW" in row:
-            bw_png_list.append(row[1])
-        elif "Purple" in row:
-            purple_png_list.append(row[1])
-        elif "Pink-Purple" in row:
-            pink_png_list.append(row[1])
-            
-    del def_png_list[0] # first entry in the csv file is [Image, Type]
+    png_list = []
+    img_paths = []
+    mask_colls = []
 
-    # make these generic and independent of selected color
-    for png in def_png_list:
-        img_path = training_imgs_dir + png[:-4] + "/images/" + png
-        def_img_paths.append(img_path)
+    for row in csv_lines:
+        if color in row:
+            png_list.append(row[1])
+            
+    if color == "Default":
+        del png_list[0]   # Because csv file begins with "Default", first entry is [Image, Type]
+        
+    for png in png_list:
+        path = training_imgs_dir + png[:-4] + "/images/" + png
+        img_paths.append(path)
         
         mask_path = training_imgs_dir + png[:-4] + "/masks/*.png"
         imcoll = io.collection.ImageCollection(mask_path)
-        def_mask_colls.append(imcoll)
+        mask_colls.append(imcoll)
         
-    for png in bw_png_list:
-        img_path = training_imgs_dir + png[:-4] + "/images/" + png
-        bw_img_paths.append(img_path)
-        
-        mask_path = training_imgs_dir + png[:-4] + "/masks/*.png"
-        imcoll = io.collection.ImageCollection(mask_path)
-        bw_mask_colls.append(imcoll)
-        
-    for png in purple_png_list:
-        img_path = training_imgs_dir + png[:-4] + "/images/" + png
-        purple_img_paths.append(img_path)
-        
-        mask_path = training_imgs_dir + png[:-4] + "/masks/*.png"
-        imcoll = io.collection.ImageCollection(mask_path)
-        purple_mask_colls.append(imcoll)
-        
-    for png in pink_png_list:
-        img_path = training_imgs_dir + png[:-4] + "/images/" + png
-        pink_img_paths.append(img_path)
-        
-        mask_path = training_imgs_dir + png[:-4] + "/masks/*.png"
-        imcoll = io.collection.ImageCollection(mask_path)
-        pink_mask_colls.append(imcoll)
-    
-    all_pngs = [def_png_list, bw_png_list, purple_png_list, pink_png_list]
-    all_img_paths = [def_img_paths, bw_img_paths, purple_img_paths, pink_img_paths]
-    all_mask_colls = [def_mask_colls, bw_mask_colls, purple_mask_colls, pink_mask_colls]
-    
-    return all_pngs, all_img_paths, all_mask_colls
+    return png_list, img_paths, mask_colls
