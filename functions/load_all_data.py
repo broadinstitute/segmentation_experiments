@@ -64,7 +64,7 @@ def load_labeled_data():
 
 image_groups, table_entries, csv_lines = load_labeled_data()
 
-def load_COLOR_data(color="Default", csv_lines=csv_lines):
+def load_data_by_color(color="Default", csv_lines=csv_lines):
     """
     Function to load all images of the specified color.
     
