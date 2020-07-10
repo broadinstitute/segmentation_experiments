@@ -67,7 +67,7 @@ def load_COLOR_data(csv_lines=csv_lines):
     pink_img_paths = []
     pink_mask_colls = []
     
-    for row in csv_lines:
+    for row in csv_lines: # make this a parameter in the function call
         if "Default" in row:
             def_png_list.append(row[1])
         elif "TissueBW" in row:
@@ -78,7 +78,8 @@ def load_COLOR_data(csv_lines=csv_lines):
             pink_png_list.append(row[1])
             
     del def_png_list[0] # first entry in the csv file is [Image, Type]
-    
+
+    # make these generic and independent of selected color
     for png in def_png_list:
         img_path = training_imgs_dir + png[:-4] + "/images/" + png
         def_img_paths.append(img_path)
