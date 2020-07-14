@@ -1,20 +1,17 @@
 import numpy as np
 from skimage import io
 
-training_imgs_dir = "/raid/data/BBBC038/training/"
-
-def compute_avg_size(mask_collection, loud=0):
-    size = 0
-    i = 0
+def compute_avg_size(mask_composite, loud=0):
+    num_nuclei = len(np.unique(mask_composite)) - 1 
     
-    for mask in mask_collection:
-        size += np.sum(mask != 0)
-        if loud == 2: 
-            print("Nucleus #%d has size %d" %(i + 1, np.sum(mask!=0)))
-        i += 1
+    total_size = np.sum(mask_composite != 0)
+    avg_size = total_size / num_nuclei
+    
+    if loud > 0:
+        print("Average nuclei size is %f" %(avg_size))
         
-    avg_size = size / len(mask_collection) 
-    if loud: 
-        print("Average nucleus size is %f" %(avg_size))
-    
+        if loud == 2:
+            io.imshow(mask_composite, cmap='nipy_spectral')
+        
+        
     return avg_size

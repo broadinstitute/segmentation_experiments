@@ -32,7 +32,7 @@ def load_imgs_masks():
         mask_colls.append(mask_coll)                              # store mask collections
         img_objs.append(img)
 
-    return img_objs ,mask_colls, img_paths
+    return img_objs, mask_colls, img_paths
 
 def load_labeled_data():
     """
@@ -59,7 +59,7 @@ def load_labeled_data():
     
     return image_groups, table_entries, csv_lines
 
-image_groups, table_entries, csv_lines = load_labeled_data()
+csv_lines = load_labeled_data()[2]
 
 def load_data_by_color(color="Default", csv_lines=csv_lines):
     """
@@ -99,5 +99,4 @@ def load_data_by_color(color="Default", csv_lines=csv_lines):
         imcoll = io.collection.ImageCollection(mask_path)
         mask_colls.append(imcoll)
         
-    return image_objects, img_paths, mask_colls
-
+    return image_objects, mask_colls, img_paths
