@@ -3,6 +3,8 @@ from skimage import io
 
 def compute_avg_size(mask_composite, loud=0):
     num_nuclei = len(np.unique(mask_composite)) - 1 
+    if num_nuclei < 1:
+        return 0
     
     total_size = np.sum(mask_composite != 0)
     avg_size = total_size / num_nuclei
