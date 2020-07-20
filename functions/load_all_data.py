@@ -11,31 +11,28 @@ def load_imgs_masks():
     """
     Function which loads ALL images and mask collections (unorganized)
     
-    Returns 4 arrays
-        First contains paths to all images
-        Second contains names of each image
-        Third contains names of all masks for each image
-        Fourth contains collections of all masks corresponding to each image
+    Returns 3 arrays
+        First contains image objects (as numpy arrays)
+        Second contains collection of masks for each image
+        Third contains paths to all images
     """
+    img_objs = []
     img_paths = []
-    img_names = []
-    mask_png_list = []
     mask_colls = []
 
     for img_name in os.listdir(training_imgs_dir):
         path_image = f"{training_imgs_dir}/{img_name}/images/{img_name}.png" # path of each image png
         path_masks = f"{training_imgs_dir}/{img_name}/masks/*.png"           # path to each directory of masks for each image
+        
+        img = io.imread(path_image)                               # load image objects into array
 
         mask_coll = io.collection.ImageCollection(path_masks)     # image collection storing all masks for given image
-        mask_dir = f"{training_imgs_dir}/{img_name}/masks/"       
-        mask_dir = os.listdir(mask_dir)                           # list of all masks for an image
 
-        img_names.append(img_name)                                # store list of image names
         img_paths.append(path_image)                              # store paths to each image
-        mask_png_list.append(mask_dir)                            # store lists of mask names
         mask_colls.append(mask_coll)                              # store mask collections
+        img_objs.append(img)
 
-    return img_paths, img_names, mask_png_list, mask_colls
+    return img_objs ,mask_colls, img_paths
 
 def load_labeled_data():
     """
@@ -71,14 +68,16 @@ def load_data_by_color(color="Default", csv_lines=csv_lines):
     Options include "Default", "Pink-Purple", "TissueBW", "Purple"
     
     returns 3 arrays. 
-        First array has the name of the png 
-        Second is the path to the image
-        Third is the mask collection corresponding to the image
+        First returns image objects 
+        Second returns the paths to the images
+        Third returns the mask collections corresponding to each image
     """
     if (color != "Default") and (color != "Pink-Purple") and (color != "TissueBW") and (color != "Purple"):
         raise ValueError("Must select a supported color. These include 'Default', 'Pink-Purple', 'TissueBW', 'Purple'.")
     
-    png_list = []
+    png_list = []       # needed to find image paths; do not return
+    
+    image_objects = []
     img_paths = []
     mask_colls = []
 
@@ -93,8 +92,12 @@ def load_data_by_color(color="Default", csv_lines=csv_lines):
         path = training_imgs_dir + png[:-4] + "/images/" + png
         img_paths.append(path)
         
+        img = io.imread(img_paths[-1])
+        image_objects.append(img)
+        
         mask_path = training_imgs_dir + png[:-4] + "/masks/*.png"
         imcoll = io.collection.ImageCollection(mask_path)
         mask_colls.append(imcoll)
         
-    return png_list, img_paths, mask_colls
+    return image_objects, img_paths, mask_colls
+
