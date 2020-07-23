@@ -2,10 +2,10 @@ from skimage import io
 import numpy as np
 import matplotlib.pyplot as plt
 
-def random_crop(img, crop_size=64, loud=False):
-    img = img[:, :, :3]    # neglect alpha value
+def random_crop(img, mask_composite=None, crop_size=64, loud=False):
+    img = img[:, :, :3]                                         # neglect alpha value
     row_start = np.random.randint(0, img.shape[0] - crop_size)  # select a random row and column
-    col_start = np.random.randint(0, img.shape[1] - crop_size)  # which still allows for a full crop
+    col_start = np.random.randint(0, img.shape[1] - crop_size)  # while still allowing for a full crop
 
     row_end = row_start + crop_size
     col_end = col_start + crop_size                            
@@ -24,5 +24,19 @@ def random_crop(img, crop_size=64, loud=False):
         ax[1].set_title("Cropped")
         ax[1].imshow(cropped_img)
         
-    return cropped_img
+    cropped_mask = crop_composite(mask_composite, row_start, row_end, col_start, col_end, loud)
+    
+    return cropped_img, cropped_mask
+    
+def crop_composite(mask_composite, row_start, row_end, col_start, col_end, loud):
+    
+    if mask_composite is not None:
+        cropped_mask = mask_composite[row_start:row_end, col_start:col_end]
 
+        if loud:
+            plt.figure()
+            print("Here is the crop of the corresponding mask composite")
+            io.imshow(cropped_mask)
+
+        return cropped_mask
+    
