@@ -15,11 +15,11 @@ def plot_image(i, predictions_array, true_label, img):
     else:
         color = 'red'
     
-    class_names = ["Default", "Purple", "TissueBW", "Pink-Purple"]
+    class_names = ["Fluorescent", "Purple", "Grayscale", "Pink-Purple"]
 
     plt.xlabel("{} {:2.0f}% ({})".format(class_names[int(predicted_label)],
                                     100*np.max(predictions_array),
-                                    class_names[true_label]),
+                                    class_names[int(true_label)]),
                                     color=color)
 
 def plot_value_array(i, predictions_array, true_label):
@@ -27,9 +27,9 @@ def plot_value_array(i, predictions_array, true_label):
     plt.grid(False)
     plt.xticks(range(4))
     plt.yticks([])
-    thisplot = plt.bar(range(4), predictions_array[i], color="#222222")
+    thisplot = plt.bar(range(4), predictions_array, color="#777777", width=0.5)
     plt.ylim([0, 1])
     predicted_label = np.argmax(predictions_array)
     
     thisplot[predicted_label].set_color('red')
-    thisplot[true_label].set_color('green')
+    thisplot[int(true_label)].set_color('blue')
