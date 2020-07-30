@@ -33,3 +33,4 @@ def plot_value_array(i, predictions_array, true_label):
     
     thisplot[predicted_label].set_color('red')
     thisplot[int(true_label)].set_color('blue')
+    
