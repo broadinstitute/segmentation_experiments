@@ -15,5 +15,4 @@ def compute_avg_size(mask_composite, loud=0):
         if loud == 2:
             io.imshow(mask_composite, cmap='nipy_spectral')
         
-        
     return avg_size
