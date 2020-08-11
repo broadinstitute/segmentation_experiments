@@ -46,4 +46,3 @@ def unmix_pink_imgs(pink_img, loud=False):
         ax[1].imshow(separated_img[:, :, 1])
         
     return separated_img[:, :, 1]
-

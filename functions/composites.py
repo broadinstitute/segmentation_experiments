@@ -12,6 +12,15 @@ def composite_masks(mask_collection, loud=False):
     
     return composite
 
+def decompose_composite(composite):
+    mask_coll = []
+    
+    for color in np.unique(composite):
+        if color != 0:
+            mask_coll.append(composite == color)
+    
+    return mask_coll
+        
 def opt_composite_masks(mask_collection, loud=False):
     composite = np.array(mask_collection)
     depth = len(mask_collection)
