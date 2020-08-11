@@ -6,6 +6,32 @@ from csv import reader
 BBBC038 = "/raid/data/BBBC038/"
 training_imgs_dir = "/raid/data/BBBC038/training/"
 
+def load_labeled_data():
+    """
+    Updated function to load labelled data
+    
+    Incorporates updated labels to CSV files in /raid/data/BBBC038/fix_training_classifications.csv
+    
+    returns image groups, table entries, and csv rows
+    """
+    table_entries = []
+    image_groups = pd.read_csv(BBBC038 + "fix_training_classifications.csv")
+    
+    for i, entry in image_groups.iterrows():
+        table_entries.append(entry)             # store each line in csv table in array 
+        
+    csv_lines = []
+    with open(BBBC038 + "fix_training_classifications.csv") as read_obj:
+        csv_reader = reader(read_obj)
+        for row in csv_reader:
+            csv_lines.append(row)               # store arrays of [classification, image names]
+            
+    # example
+    # print(csv_lines[1])
+    #   ['0', 'a102535b0e88374bea4a1cfd9ee7cb3822ff54f4ab2a9845d428ec22f9ee2288.png', 'Default', 'SuperBig']
+        
+    
+    return image_groups, table_entries, csv_lines
 
 def load_imgs_masks():
     """
@@ -34,31 +60,6 @@ def load_imgs_masks():
 
     return img_objs, mask_colls, img_paths
 
-def load_labeled_data():
-    """
-    Function to load 'labeled' data
-    
-    Returns image groups, table entries, and csv rows
-    """
-    table_entries = []
-    image_groups = pd.read_csv(BBBC038 + "training_classifications.csv")
-    
-    for i, entry in image_groups.iterrows():
-        table_entries.append(entry)             # store each line in csv table in array 
-        
-    csv_lines = []
-    with open(BBBC038 + "training_classifications.csv") as read_obj:
-        csv_reader = reader(read_obj)
-        for row in csv_reader:
-            csv_lines.append(row)               # store arrays of [classification, image names]
-            
-    # example
-    # print(csv_lines[1])
-    #   ['SuperBig', 'a102535b0e88374bea4a1cfd9ee7cb3822ff54f4ab2a9845d428ec22f9ee2288.png']
-        
-    
-    return image_groups, table_entries, csv_lines
-
 csv_lines = load_labeled_data()[2]
 
 def load_data_by_color(color="Default", csv_lines=csv_lines):
@@ -72,8 +73,8 @@ def load_data_by_color(color="Default", csv_lines=csv_lines):
         Second returns the paths to the images
         Third returns the mask collections corresponding to each image
     """
-    if (color != "Default") and (color != "Pink-Purple") and (color != "TissueBW") and (color != "Purple"):
-        raise ValueError("Must select a supported color. These include 'Default', 'Pink-Purple', 'TissueBW', 'Purple'.")
+    if (color != "Default") and (color != "Pink-Purple") and (color != "Gray-Scales") and (color != "Purple"):
+        raise ValueError("Must select a supported color. These include 'Default', 'Pink-Purple', 'Gray-Scales', 'Purple'.")
     
     png_list = []       # needed to find image paths; do not return
     
@@ -85,9 +86,6 @@ def load_data_by_color(color="Default", csv_lines=csv_lines):
         if color in row:
             png_list.append(row[1])
             
-    if color == "Default":
-        del png_list[0]   # Because csv file begins with "Default", first entry is [Image, Type]
-        
     for png in png_list:
         path = training_imgs_dir + png[:-4] + "/images/" + png
         img_paths.append(path)

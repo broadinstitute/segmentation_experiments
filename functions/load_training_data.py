@@ -32,7 +32,7 @@ def training_samples(num_samples=1000, colors=[1,1,0,0], load_masks=False):
     if colors[1]:
         purple_imgs, purple_mask_colls = load_data_by_color("Purple")[:2]
     if colors[2]:
-        tissueBW_imgs, tissueBW_mask_colls = load_data_by_color("TissueBW")[:2]
+        tissueBW_imgs, tissueBW_mask_colls = load_data_by_color("Gray-Scales")[:2]
     if colors[3]:
         pink_imgs, pink_mask_colls = load_data_by_color("Pink-Purple")[:2]
         
