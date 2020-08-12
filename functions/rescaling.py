@@ -2,7 +2,7 @@ from skimage.transform import resize
 from functions.sizes import compute_avg_size
 import matplotlib.pyplot as plt
 
-def rescale_composite(image, composite, target_size, loud=False):
+def rescale_img_comp(image, composite, target_size, loud=False):
     """
     Function which takes image, ground truth, and target size
     and returns a new image with a new composite, each of which
