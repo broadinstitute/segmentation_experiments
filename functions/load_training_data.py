@@ -1,9 +1,10 @@
 import numpy as np
-from skimage import io
-from functions.load_all_data import load_data_by_color
+import matplotlib.pyplot as plt
+from functions.load_all_data import load_data_by_color, load_imgs_masks
 from functions.composites import composite_masks
-from functions.sizes import compute_avg_size
 from functions.crop_image import random_crop
+from functions.rescaling import rescale_img_comp
+from functions.sizes import compute_avg_size
 
 # Create load function which returns full images, mask composites, and image labels.
 # Do not need to calculate average size in load function
@@ -141,3 +142,101 @@ def load_regression_samples(images, labels, composites):
     nuclei_sizes = np.array(nuclei_sizes)
         
     return cropped_imgs, cropped_masks, nuclei_sizes, labels
+
+def load_rescaled_samples(num_samples=20000):
+    """
+    Function which returns num_samples crops of rescaled images, masks, and their nuclei sizes
+    
+    First load all images and mask collections
+    Create mask composites from the collections
+    Calculate distribution of nuclei sizes across 100 bins
+    Rescale each image and mask composite to the respective bin
+    Return num_samples random crops of the rescaled data 
+    """
+    print("Loading images and mask collections...")
+    all_imgs, mask_colls = load_imgs_masks()[:2]
+    nuclei_sizes = []
+    composites = []
+    
+    print("\tLoading complete.")
+    print("Creating mask composites...")
+    for collection in mask_colls:
+        curr_mask = composite_masks(collection)
+        curr_size = compute_avg_size(curr_mask)
+        
+        composites.append(curr_mask)
+        nuclei_sizes.append(curr_size)
+    
+    print("\tComposites complete.")
+    n, bins, patches = plt.hist(nuclei_sizes, bins=100)
+    sizes_comps_imgs = np.array((nuclei_sizes, composites, all_imgs), order='F')
+    
+    ind = sizes_comps_imgs[0, :].argsort(axis=0)
+    sizes_comps_imgs[0] = sizes_comps_imgs[0][ind]
+    sizes_comps_imgs[1] = sizes_comps_imgs[1][ind]
+    sizes_comps_imgs[2] = sizes_comps_imgs[2][ind]
+    
+    rescaled_data = np.copy(sizes_comps_imgs)
+    
+    print("Rescaling Data...")
+    for i in range(len(n)):
+        if n[i] != 0.:
+            target_size = bins[i]
+            for j in range(670):
+                size = sizes_comps_imgs[0][j]
+                if i+1 < len(n):
+                    if size >= bins[i] and size < bins[i+1]:
+                        rescaled_img, rescaled_comp = rescale_img_comp(sizes_comps_imgs[2][j], 
+                                                                       sizes_comps_imgs[1][j],
+                                                                       target_size)
+                        rescaled_data[0][j] = compute_avg_size(rescaled_comp)
+                        rescaled_data[1][j] = rescaled_comp
+                        rescaled_data[2][j] = rescaled_img
+                else:
+                    if size >= bins[i]:
+                        rescaled_img, rescaled_comp = rescale_img_comp(sizes_comps_imgs[2][j],
+                                                                       sizes_comps_imgs[1][j],
+                                                                       target_size)
+                        rescaled_data[0][j] = compute_avg_size(rescaled_comp)
+                        rescaled_data[1][j] = rescaled_comp
+                        rescaled_data[2][j] = rescaled_img
+    print("\tData has been rescaled.")
+    
+    def non_zero_crop(composite, image):
+        cropped_img, cropped_mask = random_crop(img=image, 
+                                                mask_composite=composite, 
+                                                crop_size=128)
+        cropped_size = compute_avg_size(cropped_mask)
+
+        if cropped_size == 0:
+            return False
+
+        return cropped_size, cropped_mask, cropped_img
+    
+    cropped_sizes = []
+    cropped_comps = []
+    cropped_imgs = []
+
+    print("Cropping Rescaled Data...")
+    for i in range(num_samples):
+        rand_index = np.random.randint(0, 670)
+        curr_mask = rescaled_data[1][rand_index]
+        curr_img = rescaled_data[2][rand_index]
+
+        while True:
+            result = non_zero_crop(curr_mask, curr_img)
+            if result != False:
+                break
+
+        cropped_sizes.append(result[0])
+        cropped_comps.append(result[1])
+        cropped_imgs.append(result[2])
+    
+    cropped_data = np.array((cropped_sizes, cropped_comps, cropped_imgs))
+    ind = cropped_data[0, :].argsort(axis=0)
+    cropped_sizes = cropped_data[0][ind]
+    cropped_masks = cropped_data[1][ind]
+    cropped_imgs = cropped_data[2][ind]
+    
+    print("Done!")
+    return cropped_sizes, cropped_masks, cropped_imgs
