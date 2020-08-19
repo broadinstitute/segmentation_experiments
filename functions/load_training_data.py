@@ -153,10 +153,12 @@ def load_rescaled_samples(num_samples=20000):
     Rescale each image and mask composite to the respective bin
     Return num_samples random crops of the rescaled data 
     """
+    print("Loading images and mask collections...")
     all_imgs, mask_colls = load_imgs_masks()[:2]
     nuclei_sizes = []
     composites = []
     
+    print("\tLoading complete.")
     print("Creating mask composites...")
     for collection in mask_colls:
         curr_mask = composite_masks(collection)
@@ -165,7 +167,7 @@ def load_rescaled_samples(num_samples=20000):
         composites.append(curr_mask)
         nuclei_sizes.append(curr_size)
     
-    print("Composites Complete")
+    print("\tComposites complete.")
     n, bins, patches = plt.hist(nuclei_sizes, bins=100)
     sizes_comps_imgs = np.array((nuclei_sizes, composites, all_imgs), order='F')
     
@@ -198,7 +200,7 @@ def load_rescaled_samples(num_samples=20000):
                         rescaled_data[0][j] = compute_avg_size(rescaled_comp)
                         rescaled_data[1][j] = rescaled_comp
                         rescaled_data[2][j] = rescaled_img
-    print("Data has been rescaled")
+    print("\tData has been rescaled.")
     
     def non_zero_crop(composite, image):
         cropped_img, cropped_mask = random_crop(img=image, 
@@ -232,9 +234,9 @@ def load_rescaled_samples(num_samples=20000):
     
     cropped_data = np.array((cropped_sizes, cropped_comps, cropped_imgs))
     ind = cropped_data[0, :].argsort(axis=0)
-    cropped_data[0] = cropped_data[0][ind]
-    cropped_data[1] = cropped_data[1][ind]
-    cropped_data[2] = cropped_data[2][ind]
+    cropped_sizes = cropped_data[0][ind]
+    cropped_masks = cropped_data[1][ind]
+    cropped_imgs = cropped_data[2][ind]
     
     print("Done!")
-    return cropped_data
+    return cropped_sizes, cropped_masks, cropped_imgs
