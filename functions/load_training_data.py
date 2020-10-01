@@ -9,7 +9,7 @@ from functions.sizes import compute_avg_size
 
 # Create load function which returns full images, mask composites, and image labels.
 # Do not need to calculate average size in load function
-def training_samples(num_samples=1000, colors=[1,1,0,0], load_masks=False):
+def training_samples(num_samples=1000, colors=[1,1,0,0], loud=False, load_masks=False):
     """
     Function which loads all training data
     
@@ -38,6 +38,10 @@ def training_samples(num_samples=1000, colors=[1,1,0,0], load_masks=False):
     if colors[3]:
         pink_imgs, pink_mask_colls = load_data_by_color("Pink-Purple")[:2]
         
+    if loud:
+        print("Loading samples...")
+        start = time.time()
+    
     for i in range(num_samples):
         # load a random image from each selected category and take a random crop
         # add the image and its label to the appropriate lists
@@ -96,6 +100,11 @@ def training_samples(num_samples=1000, colors=[1,1,0,0], load_masks=False):
                 mask_composites.append(mask_comp)
                 full_images.append(pink_img)
         
+    if loud:
+        end = time.time() - start
+        print("Samples loaded in %d minutes, %.2f seconds"
+             %((end // 60), (end % 60)))
+    
     # convert lists to np arrays
     # normalize samples so each pixel lies between 0 and 1
     image_samples = np.array(image_samples)
