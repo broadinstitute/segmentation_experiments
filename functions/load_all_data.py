@@ -66,7 +66,7 @@ def load_data_by_color(color="Default", csv_lines=csv_lines):
     """
     Function to load all images of the specified color.
     
-    Options include "Default", "Pink-Purple", "TissueBW", "Purple"
+    Options include "Default", "Pink-Purple", "Gray-Scales", "Purple"
     
     returns 3 arrays. 
         First returns image objects 
